@@ -27,7 +27,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zmap/zcrypto/internal/cpu"
+	"github.com/northwood-labs/zcrypto/internal/cpu"
 	"github.com/zmap/zcrypto/x509"
 )
 
@@ -162,7 +162,12 @@ func (curveID *CurveID) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	if expectedName := nameForCurve(aux.Value); expectedName != aux.Name {
-		return fmt.Errorf("mismatched curve and name, curve: %d, name: %s, expected name: %s", aux.Value, aux.Name, expectedName)
+		return fmt.Errorf(
+			"mismatched curve and name, curve: %d, name: %s, expected name: %s",
+			aux.Value,
+			aux.Name,
+			expectedName,
+		)
 	}
 	*curveID = CurveID(aux.Value)
 	return nil
@@ -203,7 +208,12 @@ func (pFormat *PointFormat) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	if expectedName := nameForPointFormat(aux.Value); expectedName != aux.Name {
-		return fmt.Errorf("mismatched point format and name, point format: %d, name: %s, expected name: %s", aux.Value, aux.Name, expectedName)
+		return fmt.Errorf(
+			"mismatched point format and name, point format: %d, name: %s, expected name: %s",
+			aux.Value,
+			aux.Name,
+			expectedName,
+		)
 	}
 	*pFormat = PointFormat(aux.Value)
 	return nil
@@ -1082,7 +1092,6 @@ func (c *Config) initLegacySessionTicketKeyRLocked() {
 	} else if !bytes.HasPrefix(c.SessionTicketKey[:], deprecatedSessionTicketKey) && len(c.sessionTicketKeys) == 0 {
 		c.sessionTicketKeys = []ticketKey{c.ticketKeyFromBytes(c.SessionTicketKey)}
 	}
-
 }
 
 // ticketKeys returns the ticketKeys for this connection.
@@ -1489,7 +1498,9 @@ func (chi *ClientHelloInfo) SupportsCertificate(c *Certificate) error {
 		return true
 	})
 	if cipherSuite == nil {
-		return supportsRSAFallback(errors.New("client doesn't support any cipher suites compatible with the certificate"))
+		return supportsRSAFallback(
+			errors.New("client doesn't support any cipher suites compatible with the certificate"),
+		)
 	}
 
 	return nil
@@ -1743,7 +1754,8 @@ var (
 	hasGCMAsmAMD64 = cpu.X86.HasAES && cpu.X86.HasPCLMULQDQ
 	hasGCMAsmARM64 = cpu.ARM64.HasAES && cpu.ARM64.HasPMULL
 	// Keep in sync with crypto/aes/cipher_s390x.go.
-	hasGCMAsmS390X = cpu.S390X.HasAES && cpu.S390X.HasAESCBC && cpu.S390X.HasAESCTR && (cpu.S390X.HasGHASH || cpu.S390X.HasAESGCM)
+	hasGCMAsmS390X = cpu.S390X.HasAES && cpu.S390X.HasAESCBC && cpu.S390X.HasAESCTR &&
+		(cpu.S390X.HasGHASH || cpu.S390X.HasAESGCM)
 
 	hasAESGCMHardwareSupport = runtime.GOARCH == "amd64" && hasGCMAsmAMD64 ||
 		runtime.GOARCH == "arm64" && hasGCMAsmARM64 ||

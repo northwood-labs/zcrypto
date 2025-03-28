@@ -12,7 +12,7 @@ import (
 	"runtime"
 	"testing"
 
-	. "github.com/zmap/zcrypto/internal/cpu"
+	. "github.com/northwood-labs/zcrypto/internal/cpu"
 )
 
 func TestX86ifAVX2hasAVX(t *testing.T) {

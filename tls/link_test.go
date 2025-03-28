@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/zmap/zcrypto/internal/testenv"
+	"github.com/northwood-labs/zcrypto/internal/testenv"
 )
 
 // Tests that the linker is able to remove references to the Client or Server if unused.

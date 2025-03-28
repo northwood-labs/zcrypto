@@ -21,7 +21,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zmap/zcrypto/internal/testenv"
+	"github.com/northwood-labs/zcrypto/internal/testenv"
 	"github.com/zmap/zcrypto/x509"
 )
 
@@ -129,7 +129,11 @@ func TestX509KeyPairErrors(t *testing.T) {
 		t.Fatalf("X509KeyPair didn't return an error when both arguments were certificates")
 	}
 	if subStr := "certificate"; !strings.Contains(err.Error(), subStr) {
-		t.Fatalf("Expected %q in the error when both arguments to X509KeyPair were certificates, but the error was %q", subStr, err)
+		t.Fatalf(
+			"Expected %q in the error when both arguments to X509KeyPair were certificates, but the error was %q",
+			subStr,
+			err,
+		)
 	}
 
 	const nonsensePEM = `
@@ -143,7 +147,11 @@ Zm9vZm9vZm9v
 		t.Fatalf("X509KeyPair didn't return an error when both arguments were nonsense")
 	}
 	if subStr := "NONSENSE"; !strings.Contains(err.Error(), subStr) {
-		t.Fatalf("Expected %q in the error when both arguments to X509KeyPair were nonsense, but the error was %q", subStr, err)
+		t.Fatalf(
+			"Expected %q in the error when both arguments to X509KeyPair were nonsense, but the error was %q",
+			subStr,
+			err,
+		)
 	}
 }
 
@@ -492,7 +500,7 @@ func TestVerifyHostname(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := c.VerifyHostname("www.google.com"); err == nil {
-		//t.Fatalf("verify www.google.com succeeded with InsecureSkipVerify=true")
+		// t.Fatalf("verify www.google.com succeeded with InsecureSkipVerify=true")
 	}
 }
 
@@ -550,7 +558,7 @@ func TestConnCloseBreakingWrite(t *testing.T) {
 	}
 
 	inWrite := make(chan bool, 1)
-	var errConnClosed = errors.New("conn closed for test")
+	errConnClosed := errors.New("conn closed for test")
 	conn.writeFunc = func(p []byte) (n int, err error) {
 		inWrite <- true
 		<-connClosed
@@ -791,7 +799,12 @@ func TestCloneNonFuncFields(t *testing.T) {
 		switch fn := typ.Field(i).Name; fn {
 		case "Rand":
 			f.Set(reflect.ValueOf(io.Reader(os.Stdin)))
-		case "Time", "GetCertificate", "GetConfigForClient", "VerifyPeerCertificate", "VerifyConnection", "GetClientCertificate":
+		case "Time",
+			"GetCertificate",
+			"GetConfigForClient",
+			"VerifyPeerCertificate",
+			"VerifyConnection",
+			"GetClientCertificate":
 			// DeepEqual can't compare functions. If you add a
 			// function field to this list, you must also change
 			// TestCloneFuncFields to ensure that the func field is
@@ -1081,8 +1094,8 @@ func TestConnectionState(t *testing.T) {
 
 	const alpnProtocol = "golang"
 	const serverName = "example.golang"
-	var scts = [][]byte{[]byte("dummy sct 1"), []byte("dummy sct 2")}
-	var ocsp = []byte("dummy ocsp")
+	scts := [][]byte{[]byte("dummy sct 1"), []byte("dummy sct 2")}
+	ocsp := []byte("dummy ocsp")
 
 	for _, v := range []uint16{VersionTLS12, VersionTLS13} {
 		var name string
@@ -1119,7 +1132,11 @@ func TestConnectionState(t *testing.T) {
 			}
 
 			if !ss.HandshakeComplete || !cs.HandshakeComplete {
-				t.Errorf("Got HandshakeComplete %v (server) and %v (client), expected true", ss.HandshakeComplete, cs.HandshakeComplete)
+				t.Errorf(
+					"Got HandshakeComplete %v (server) and %v (client), expected true",
+					ss.HandshakeComplete,
+					cs.HandshakeComplete,
+				)
 			}
 
 			if ss.DidResume || cs.DidResume {
@@ -1131,7 +1148,12 @@ func TestConnectionState(t *testing.T) {
 			}
 
 			if ss.NegotiatedProtocol != alpnProtocol || cs.NegotiatedProtocol != alpnProtocol {
-				t.Errorf("Got negotiated protocol %q (server) and %q (client), expected %q", ss.NegotiatedProtocol, cs.NegotiatedProtocol, alpnProtocol)
+				t.Errorf(
+					"Got negotiated protocol %q (server) and %q (client), expected %q",
+					ss.NegotiatedProtocol,
+					cs.NegotiatedProtocol,
+					alpnProtocol,
+				)
 			}
 
 			if !cs.NegotiatedProtocolIsMutual {
@@ -1147,11 +1169,21 @@ func TestConnectionState(t *testing.T) {
 			}
 
 			if len(ss.PeerCertificates) != 1 || len(cs.PeerCertificates) != 1 {
-				t.Errorf("Got %d (server) and %d (client) peer certificates, expected %d", len(ss.PeerCertificates), len(cs.PeerCertificates), 1)
+				t.Errorf(
+					"Got %d (server) and %d (client) peer certificates, expected %d",
+					len(ss.PeerCertificates),
+					len(cs.PeerCertificates),
+					1,
+				)
 			}
 
 			if len(ss.VerifiedChains) != 1 || len(cs.VerifiedChains) != 1 {
-				t.Errorf("Got %d (server) and %d (client) verified chains, expected %d", len(ss.VerifiedChains), len(cs.VerifiedChains), 1)
+				t.Errorf(
+					"Got %d (server) and %d (client) verified chains, expected %d",
+					len(ss.VerifiedChains),
+					len(cs.VerifiedChains),
+					1,
+				)
 			} else if len(ss.VerifiedChains[0]) != 2 || len(cs.VerifiedChains[0]) != 2 {
 				t.Errorf("Got %d (server) and %d (client) long verified chain, expected %d", len(ss.VerifiedChains[0]), len(cs.VerifiedChains[0]), 2)
 			}
@@ -1174,7 +1206,11 @@ func TestConnectionState(t *testing.T) {
 
 			if v == VersionTLS13 {
 				if ss.TLSUnique != nil || cs.TLSUnique != nil {
-					t.Errorf("Got TLSUnique %x (server) and %x (client), expected nil in TLS 1.3", ss.TLSUnique, cs.TLSUnique)
+					t.Errorf(
+						"Got TLSUnique %x (server) and %x (client), expected nil in TLS 1.3",
+						ss.TLSUnique,
+						cs.TLSUnique,
+					)
 				}
 			} else {
 				if ss.TLSUnique == nil || cs.TLSUnique == nil {
@@ -1485,8 +1521,7 @@ func TestPKCS1OnlyCert(t *testing.T) {
 		t.Fatal("expected broken certificate to cause connection to fail")
 	}
 
-	clientConfig.Certificates[0].SupportedSignatureAlgorithms =
-		[]SignatureScheme{PKCS1WithSHA1, PKCS1WithSHA256}
+	clientConfig.Certificates[0].SupportedSignatureAlgorithms = []SignatureScheme{PKCS1WithSHA1, PKCS1WithSHA256}
 
 	// But if the certificate restricts supported algorithms, RSA-PSS should not
 	// be selected, and the handshake should succeed.
